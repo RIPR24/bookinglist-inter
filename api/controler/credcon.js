@@ -2,7 +2,6 @@ const Credmodel = require("../models/Cred");
 const Permissionmodel = require("../models/permission");
 const { copy } = require("../routes/userroute");
 const { encrypt, decrypt } = require("../utils/encription");
-let cached = null; // caching the creds
 
 const newCard = async (req, res) => {
   const data = req.body;
@@ -33,20 +32,16 @@ const getCards = async (req, res) => {
 };
 
 const getCardsg = async (req, res) => {
-  if (cached) {
-    res.json({ status: "success", cards: cached });
-  } else {
-    const cards = await Credmodel.find({});
-    const per = await Permissionmodel.findOne({});
-    cached = cards.map((el) => {
-      let copy = { name: el.name, _id: el._id };
-      if (per.address) copy.address = decrypt(el.name, el.address); //Decryption of data
-      if (per.pin) copy.pin = decrypt(el.name, el.pin);
-      if (per.phone) copy.phone = decrypt(el.name, el.phone);
-      return copy;
-    });
-    res.json({ status: "success", cards: cached });
-  }
+  const cards = await Credmodel.find({});
+  const per = await Permissionmodel.findOne({});
+  const crds = cards.map((el) => {
+    let copy = { name: el.name, _id: el._id };
+    if (per.address) copy.address = decrypt(el.name, el.address); //Decryption of data
+    if (per.pin) copy.pin = decrypt(el.name, el.pin);
+    if (per.phone) copy.phone = decrypt(el.name, el.phone);
+    return copy;
+  });
+  res.json({ status: "success", cards: crds });
 };
 
 const modifyCard = async (req, res) => {
