@@ -55,6 +55,7 @@ const Home = () => {
           className="imgbtn"
           onClick={() => {
             if (setUser) setUser(null);
+            localStorage.removeItem("tok");
             navigate("/");
           }}
         />
