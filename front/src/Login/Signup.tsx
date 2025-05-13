@@ -8,32 +8,38 @@ import { Context } from "../Context/AppContext";
 type info = {
   email: string;
   password: string;
+  conpass: string;
 };
 
-const Login = () => {
+const Signup = () => {
   const [show, setShow] = useState(false);
   const [disable, setDisable] = useState(false);
   const [prob, setProb] = useState("");
-  const [info, setInfo] = useState<info>({ email: "", password: "" });
-  const navigate = useNavigate();
   const { setUser } = useContext(Context);
+  const [info, setInfo] = useState<info>({
+    email: "",
+    password: "",
+    conpass: "",
+  });
+  const navigate = useNavigate();
 
-  const login = async () => {
+  const signup = async () => {
     const reg =
       /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     //email Validation
     if (reg.test(info.email)) {
-      setDisable(true);
-      const res = await postReq("user/login", { ...info }, "");
-      if (res.status === "success") {
-        if (setUser) setUser(res.user);
-        if (res.user.role === "") {
+      if (info.password === info.conpass) {
+        setDisable(true);
+        const res = await postReq("user/signup", { ...info }, "");
+        if (res.status === "success") {
+          if (setUser) setUser(res.user);
           navigate("/role");
         } else {
-          navigate("/home");
+          setProb(res.status);
+          setDisable(false);
         }
       } else {
-        setProb(res.status);
+        setProb("Password not matching");
       }
     } else {
       setProb("Enter Valid email");
@@ -45,6 +51,8 @@ const Login = () => {
       setInfo((p) => ({ ...p, email: e.target.value }));
     if (e.target.id === "password")
       setInfo((p) => ({ ...p, password: e.target.value }));
+    if (e.target.id === "conpass")
+      setInfo((p) => ({ ...p, conpass: e.target.value }));
   };
 
   return (
@@ -57,14 +65,15 @@ const Login = () => {
         id="email"
         onChange={handleChange}
         value={info.email}
+        placeholder="Email"
       />
       <div className="inp-div">
         <input
           style={{ border: "none", padding: "0 10px", borderRadius: 0 }}
           type={show ? "text" : "password"}
           id="password"
+          placeholder="Password"
           onChange={handleChange}
-          value={info.password}
         />
         <img
           style={{ height: 20, width: 20 }}
@@ -74,25 +83,32 @@ const Login = () => {
           }}
         />
       </div>
+      <input
+        type="password"
+        id="conpass"
+        onChange={handleChange}
+        value={info.conpass}
+        placeholder="Confirm Password"
+      />
       <p style={{ color: "red" }}>{prob}</p>
       <p className="pl">
-        Don't have an account?{" "}
+        Already have an account?{" "}
         <span
           className="prm-p"
           onClick={() => {
-            navigate("/signup");
+            navigate("/");
           }}
         >
-          Sign up
+          login.
         </span>
       </p>
-      <div className="inline">
-        <button disabled={disable} onClick={login}>
-          Login
+      <div>
+        <button disabled={disable} onClick={signup}>
+          Sign up
         </button>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Signup;

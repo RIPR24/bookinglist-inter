@@ -24,10 +24,11 @@ const getCards = async (req, res) => {
   } else {
     const cards = await Credmodel.find({});
     cached = cards.map((el) => ({
-      ...el,
+      name: el.name,
+      _id: el._id,
       address: decrypt(el.name, el.address), //Decryption of data
-      pin: decrypt(data.name, data.pin),
-      phone: decrypt(data.name, data.phone),
+      pin: decrypt(el.name, el.pin),
+      phone: decrypt(el.name, el.phone),
     }));
     res.json({ status: "success", cards: cached });
   }
@@ -39,16 +40,17 @@ const modifyCard = async (req, res) => {
     const card = await Credmodel.findById(_id);
     if (card.id) {
       card.name = name;
-      card.address = address;
-      card.pin = pin;
-      card.phone = phone;
+      card.address = encrypt(name, address);
+      card.pin = encrypt(name, pin);
+      card.phone = encrypt(name, phone);
       await card.save();
       const cards = await Credmodel.find({});
       cached = cards.map((el) => ({
-        ...el,
+        name: el.name,
+        _id: el._id,
         address: decrypt(el.name, el.address), //Decryption of data
-        pin: decrypt(data.name, data.pin),
-        phone: decrypt(data.name, data.phone),
+        pin: decrypt(el.name, el.pin),
+        phone: decrypt(el.name, el.phone),
       }));
       res.json({ status: "success", cards: cached });
     }
@@ -63,10 +65,11 @@ const deleteCard = async (req, res) => {
     await Credmodel.findByIdAndDelete(_id);
     const cards = await Credmodel.find({});
     cached = cards.map((el) => ({
-      ...el,
+      name: el.name,
+      _id: el._id,
       address: decrypt(el.name, el.address), //Decryption of data
-      pin: decrypt(data.name, data.pin),
-      phone: decrypt(data.name, data.phone),
+      pin: decrypt(el.name, el.pin),
+      phone: decrypt(el.name, el.phone),
     }));
     res.json({ status: "success", cards: cached });
   } catch (error) {

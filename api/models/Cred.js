@@ -6,8 +6,8 @@ const CredSchema = new mongoose.Schema({
     required: true,
   },
   address: String,
-  pin: Number,
-  phone: Number,
+  pin: String,
+  phone: String,
 });
 
 const Credmodel = mongoose.model("creds", CredSchema);

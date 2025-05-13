@@ -20,6 +20,8 @@ app.use("/user", userroute);
 app.use("/cred", credroute);
 
 app.use((err, req, res, next) => {
+  console.log(err);
+
   res.status(err.statusCode || 500).json({
     status: err.status || "Server Error",
     message: err.message || "Server Error",
