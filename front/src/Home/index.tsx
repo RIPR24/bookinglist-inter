@@ -36,8 +36,6 @@ const Home = () => {
       user?.role === "admin" ? "cred/admin" : "cred",
       user?.token || ""
     );
-    console.log(res);
-
     setCards(res.cards);
   };
 

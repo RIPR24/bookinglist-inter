@@ -60,6 +60,7 @@ const Signup = () => {
       className="con"
       style={{ justifyContent: "space-evenly", height: 400 }}
     >
+      <h1>CRUD App</h1>
       <input
         type="email"
         id="email"

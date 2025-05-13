@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import eye from "../assets/logos/eye.svg";
 import eyes from "../assets/logos/eye-s.svg";
 import { postReq } from "../Utils/request";
@@ -27,16 +27,35 @@ const Login = () => {
       const res = await postReq("user/login", { ...info }, "");
       if (res.status === "success") {
         if (setUser) setUser(res.user);
+        localStorage.setItem("tok", res.user.token);
         if (res.user.role === "") {
           navigate("/role");
         } else {
           navigate("/home");
         }
       } else {
+        setDisable(false);
         setProb(res.status);
       }
     } else {
       setProb("Enter Valid email");
+    }
+  };
+
+  const logtok = async () => {
+    const tok = localStorage.getItem("tok");
+    if (tok) {
+      localStorage.removeItem("tok");
+      const res = await postReq("user/logtok", { tok }, "");
+      if (res.status === "success") {
+        if (setUser) setUser(res.user);
+        localStorage.setItem("tok", res.user.token);
+        if (res.user.role === "") {
+          navigate("/role");
+        } else {
+          navigate("/home");
+        }
+      }
     }
   };
 
@@ -47,11 +66,16 @@ const Login = () => {
       setInfo((p) => ({ ...p, password: e.target.value }));
   };
 
+  useEffect(() => {
+    logtok();
+  }, []);
+
   return (
     <div
       className="con"
       style={{ justifyContent: "space-evenly", height: 400 }}
     >
+      <h1>CRUD App</h1>
       <input
         type="email"
         id="email"

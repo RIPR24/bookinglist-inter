@@ -15,6 +15,7 @@ const SelectRole = () => {
       const res = await postReq("user/setrole", { role }, user.token);
       if (res.status === "success") {
         if (setUser) setUser(res.user);
+        localStorage.setItem("tok", res.user.token);
         navigate("/home");
       } else {
         if (setPop) setPop(res.status);
@@ -26,6 +27,7 @@ const SelectRole = () => {
   };
   return (
     <div className="con" style={{ gap: 40, margin: 20 }}>
+      <h1>CRUD App</h1>
       <p style={{ fontSize: "1.4rem" }}>Select your role {user?.email}</p>
       <div className="inline">
         <label htmlFor="role">Role:</label>
