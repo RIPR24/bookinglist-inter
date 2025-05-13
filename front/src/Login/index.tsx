@@ -4,6 +4,7 @@ import eyes from "../assets/logos/eye-s.svg";
 import { postReq } from "../Utils/request";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../Context/AppContext";
+import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 
 type info = {
   email: string;
@@ -59,6 +60,32 @@ const Login = () => {
     }
   };
 
+  const responseGoogle = async (authRes: any) => {
+    try {
+      if (authRes.code) {
+        const res = await postReq("user/glogin", { code: authRes.code }, "");
+        googleLogout();
+        if (res.status === "success") {
+          if (setUser) setUser(res.user);
+          localStorage.setItem("tok", res.user.token);
+          if (res.user.role === "") {
+            navigate("/role");
+          } else {
+            navigate("/home");
+          }
+        }
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: responseGoogle,
+    onError: responseGoogle,
+    flow: "auth-code",
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.id === "email")
       setInfo((p) => ({ ...p, email: e.target.value }));
@@ -111,6 +138,9 @@ const Login = () => {
         </span>
       </p>
       <div className="inline">
+        <button disabled={disable} onClick={googleLogin}>
+          Google
+        </button>
         <button disabled={disable} onClick={login}>
           Login
         </button>
