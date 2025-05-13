@@ -1,4 +1,6 @@
 const Credmodel = require("../models/Cred");
+const Permissionmodel = require("../models/permission");
+const { copy } = require("../routes/userroute");
 const { encrypt, decrypt } = require("../utils/encription");
 let cached = null; // caching the creds
 
@@ -19,17 +21,30 @@ const newCard = async (req, res) => {
 };
 
 const getCards = async (req, res) => {
+  const cards = await Credmodel.find({});
+  let copy = cards.map((el) => ({
+    name: el.name,
+    _id: el._id,
+    address: decrypt(el.name, el.address), //Decryption of data
+    pin: decrypt(el.name, el.pin),
+    phone: decrypt(el.name, el.phone),
+  }));
+  res.json({ status: "success", cards: copy });
+};
+
+const getCardsg = async (req, res) => {
   if (cached) {
     res.json({ status: "success", cards: cached });
   } else {
     const cards = await Credmodel.find({});
-    cached = cards.map((el) => ({
-      name: el.name,
-      _id: el._id,
-      address: decrypt(el.name, el.address), //Decryption of data
-      pin: decrypt(el.name, el.pin),
-      phone: decrypt(el.name, el.phone),
-    }));
+    const per = await Permissionmodel.findOne({});
+    cached = cards.map((el) => {
+      let copy = { name: el.name, _id: el._id };
+      if (per.address) copy.address = decrypt(el.name, el.address); //Decryption of data
+      if (per.pin) copy.pin = decrypt(el.name, el.pin);
+      if (per.phone) copy.phone = decrypt(el.name, el.phone);
+      return copy;
+    });
     res.json({ status: "success", cards: cached });
   }
 };
@@ -45,14 +60,15 @@ const modifyCard = async (req, res) => {
       card.phone = encrypt(name, phone);
       await card.save();
       const cards = await Credmodel.find({});
-      cached = cards.map((el) => ({
+      let copy = cards.map((el) => ({
         name: el.name,
         _id: el._id,
         address: decrypt(el.name, el.address), //Decryption of data
         pin: decrypt(el.name, el.pin),
         phone: decrypt(el.name, el.phone),
       }));
-      res.json({ status: "success", cards: cached });
+      cached = null;
+      res.json({ status: "success", cards: copy });
     }
   } catch (error) {
     res.json({ status: "failed" });
@@ -64,14 +80,15 @@ const deleteCard = async (req, res) => {
   try {
     await Credmodel.findByIdAndDelete(_id);
     const cards = await Credmodel.find({});
-    cached = cards.map((el) => ({
+    let copy = cards.map((el) => ({
       name: el.name,
       _id: el._id,
       address: decrypt(el.name, el.address), //Decryption of data
       pin: decrypt(el.name, el.pin),
       phone: decrypt(el.name, el.phone),
     }));
-    res.json({ status: "success", cards: cached });
+    cached = null;
+    res.json({ status: "success", cards: copy });
   } catch (error) {
     res.json({ status: "failed" });
   }
@@ -81,5 +98,6 @@ module.exports = {
   newCard,
   deleteCard,
   getCards,
+  getCardsg,
   modifyCard,
 };

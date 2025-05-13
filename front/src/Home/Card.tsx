@@ -38,11 +38,11 @@ const Card = ({ card, setForm, setCards }: props) => {
       <img src={profile} />
       <p>{card.name}</p>
       <img src={home} />
-      <p>{card.address}</p>
+      <p>{card.address || "***"}</p>
       <img src={keypad} />
-      <p>{card.pin}</p>
+      <p>{card.pin || "***"}</p>
       <img src={phone} />
-      <p>{card.phone}</p>
+      <p>{card.phone || "***"}</p>
       {user?.role === "admin" && (
         <div
           style={{

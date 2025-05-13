@@ -7,13 +7,14 @@ import Card from "./Card";
 import Form from "./Form";
 import lo from "../assets/logos/logout.svg";
 import { AnimatePresence } from "framer-motion";
+import Permissions from "./Permissions";
 
 export type card = {
   _id?: string;
   name: string;
-  address: string;
-  pin: string;
-  phone: string;
+  address?: string;
+  pin?: string;
+  phone?: string;
 };
 
 export const def = {
@@ -28,9 +29,13 @@ const Home = () => {
   const navigate = useNavigate();
   const [cards, setCards] = useState<card[]>([]);
   const [form, setForm] = useState<card | null>(null);
+  const [perpop, setPerpop] = useState(false);
 
   const getData = async () => {
-    const res = await getReq("cred", user?.token || "");
+    const res = await getReq(
+      user?.role === "admin" ? "cred/admin" : "cred",
+      user?.token || ""
+    );
     console.log(res);
 
     setCards(res.cards);
@@ -63,15 +68,35 @@ const Home = () => {
           ))}
       </div>
       {user?.role === "admin" && (
-        <button
-          onClick={() => {
-            setForm(def);
+        <div
+          style={{
+            position: "fixed",
+            bottom: 10,
+            right: 10,
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
           }}
-          style={{ position: "fixed", bottom: 10, right: 10 }}
         >
-          Add Credentials
-        </button>
+          <button
+            onClick={() => {
+              setPerpop(true);
+            }}
+          >
+            Permissions
+          </button>
+          <button
+            onClick={() => {
+              setForm(def);
+            }}
+          >
+            Add Credentials
+          </button>
+        </div>
       )}
+      <AnimatePresence>
+        {perpop && <Permissions setPerpop={setPerpop} />}
+      </AnimatePresence>
       <AnimatePresence>
         {form && <Form form={form} setForm={setForm} setCards={setCards} />}
       </AnimatePresence>

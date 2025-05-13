@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const userroute = require("./routes/userroute");
 const credroute = require("./routes/credroute");
+const perroute = require("./routes/perroute");
 require("dotenv").config();
 
 mongoose.connect(process.env.API_URI);
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/user", userroute);
 app.use("/cred", credroute);
+app.use("/per", perroute);
 
 app.use((err, req, res, next) => {
   console.log(err);
