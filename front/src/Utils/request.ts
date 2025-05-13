@@ -1,4 +1,4 @@
-const site = "https://bookinglist-inter.onrender.com";
+const site = "https://bookinglist-inter.onrender.com/";
 const postReq = async (surl: string, data: {}, tok: string) => {
   const res = await fetch(site + surl, {
     method: "POST",

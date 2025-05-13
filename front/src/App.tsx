@@ -7,7 +7,7 @@ import { AnimatePresence } from "framer-motion";
 const App = () => {
   const { pop } = useContext(Context);
   return (
-    <div className="con">
+    <div className="con" style={{ justifyContent: "center" }}>
       <Outlet />
       <AnimatePresence>{pop && <Popup />}</AnimatePresence>
     </div>

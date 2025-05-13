@@ -12,6 +12,8 @@
   --prmL: #474747;
   --prm2: #252525;
   --grey: #8a8a8a;
+  height: 100%;
+  width: 100%;
 }
 
 #root {
