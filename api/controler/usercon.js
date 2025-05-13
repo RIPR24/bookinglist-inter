@@ -4,6 +4,7 @@ const Usermodel = require("../models/Users");
 const { OAuth2Client } = require("google-auth-library");
 
 const getCred = async (code) => {
+  // geting user info from gmail
   try {
     const oauth2Client = new OAuth2Client(
       process.env.GOOGLE_CLIENT_ID,
@@ -28,7 +29,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   const chk = await Usermodel.findOne({ email: email });
   if (chk) {
-    const hpass = createHmac("sha256", process.env.SECRET)
+    const hpass = createHmac("sha256", process.env.SECRET) // password hashig
       .update(password)
       .digest("base64");
     if (hpass === chk.password) {
@@ -59,7 +60,7 @@ const signup = async (req, res) => {
   if (chk) {
     res.json({ status: "No User Found" });
   } else {
-    const hpass = createHmac("sha256", process.env.SECRET)
+    const hpass = createHmac("sha256", process.env.SECRET) // Password hashing
       .update(password)
       .digest("base64");
     const user = await Usermodel.create({ email, password: hpass, role: "" });
@@ -101,6 +102,7 @@ const glogin = async (req, res) => {
   const gres = await getCred(req.body.code);
   let user = await Usermodel.findOne({ email: gres.email });
   if (!user?._id) {
+    // Creating new user with gmail
     user = await Usermodel.create({
       email: gres.email,
       password: "google",
@@ -125,6 +127,7 @@ const glogin = async (req, res) => {
 };
 
 const logTok = async (req, res) => {
+  // jwt login 30d valid
   const { tok } = req.body;
   jwt.verify(tok, process.env.ACCESS_TOKEN, async (err, pl) => {
     if (err) {

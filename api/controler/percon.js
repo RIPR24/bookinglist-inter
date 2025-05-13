@@ -6,6 +6,7 @@ const getPer = async (req, res) => {
 };
 
 const updatePer = async (req, res) => {
+  // Updating permissions
   const { perm } = req.body;
   const per = await Permissionmodel.findOne({});
   if (per) {

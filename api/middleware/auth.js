@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const Usermodel = require("../models/Users");
 
 const authUser = (req, res, next) => {
+  // validating token
   jwt.verify(
     req.headers.authorization,
     process.env.ACCESS_TOKEN,
@@ -22,6 +23,7 @@ const authUser = (req, res, next) => {
 };
 
 const chkAdmin = (req, res, next) => {
+  // checking for Admin
   if (req.user.role === "admin") {
     next();
   } else {

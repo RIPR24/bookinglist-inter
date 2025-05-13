@@ -13,10 +13,11 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("this runs");
 });
-app.use(cors());
+app.use(cors({ origin: "https://bookinglist-bppg.onrender.com" })); // cors allow origin
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+//routes
 app.use("/user", userroute);
 app.use("/cred", credroute);
 app.use("/per", perroute);
@@ -24,6 +25,7 @@ app.use("/per", perroute);
 app.use((err, req, res, next) => {
   console.log(err);
 
+  // global error handler
   res.status(err.statusCode || 500).json({
     status: err.status || "Server Error",
     message: err.message || "Server Error",
